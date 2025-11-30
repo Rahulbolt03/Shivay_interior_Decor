@@ -1,0 +1,140 @@
+/**
+ * Loader Styles
+ * 
+ * Horizontal loading line with smooth animation.
+ * 
+ * Customization:
+ * - FADE_OUT_DURATION: 600ms - Duration of fade-out animation
+ * - LINE_WIDTH: Width of the loading line (default: 200px)
+ * - LINE_HEIGHT: Height/thickness of the line (default: 2px)
+ * - LINE_COLOR: Color of the loading line (default: --accent)
+ * - ANIMATION_DURATION: Speed of loading animation (default: 1.5s)
+ * - BG_COLOR: Background color (default: --background)
+ */
+
+.loader-overlay {
+  /* Full-screen overlay */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  
+  /* Background color - black background */
+  background-color: #000000;
+  
+  /* Center content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Initial state: visible */
+  opacity: 1;
+  visibility: visible;
+  
+  /* Smooth fade-out transition */
+  transition: opacity 600ms ease-out, visibility 600ms ease-out;
+  /* FADE_OUT_DURATION: 600ms - adjust this value to change fade-out speed */
+}
+
+.loader-overlay.fade-out {
+  /* Fade-out state */
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Loading Line Container */
+.loading-line-container {
+  /* LINE_WIDTH: 200px - adjust this value to change line width */
+  width: 200px;
+  height: 2px;
+  /* LINE_HEIGHT: 2px - adjust this value to change line thickness */
+  
+  background-color: hsl(var(--accent) / 0.2);
+  /* Background line color - subtle */
+  
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+/* Loading Line - Animated Progress Bar */
+.loading-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  /* Start at 0% width */
+  
+  background-color: hsl(var(--accent));
+  /* LINE_COLOR: Uses --accent - change to customize */
+  
+  border-radius: 2px;
+  
+  /* Smooth continuous fill animation - 2 seconds */
+  animation: loadingProgress 2s ease-out forwards;
+  /* ANIMATION_DURATION: 2s - matches loader duration */
+  /* EASING: ease-out - smooth and slow fill */
+}
+
+/**
+ * Loading Progress Animation
+ * 
+ * Creates smooth continuous fill from left to right over 2 seconds.
+ * 
+ * Customization:
+ * - Duration matches MIN_LOAD_TIME (2 seconds)
+ * - Fills from 0% to 100% width continuously
+ */
+@keyframes loadingProgress {
+  0% {
+    width: 0%;
+    /* Start: empty line */
+  }
+  100% {
+    width: 100%;
+    /* End: fully filled line */
+  }
+}
+
+/* Alternative: Continuous flow animation (uncomment to use) */
+/*
+@keyframes loadingProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+*/
+
+/* Alternative: Thicker line (uncomment to use) */
+/*
+.loading-line-container {
+  width: 200px;
+  height: 3px;
+}
+
+.loading-line {
+  height: 100%;
+}
+*/
+
+/* Alternative: Wider line (uncomment to use) */
+/*
+.loading-line-container {
+  width: 300px;
+  height: 2px;
+}
+*/
+

@@ -1,0 +1,96 @@
+/**
+ * ContentWrapper Styles
+ * 
+ * Implements staggered fadeInUp animation system using data-delay attributes.
+ * Matches rayartchitects.com/blog animation style.
+ * 
+ * Customization:
+ * - FADE_IN_DURATION: 800ms - Duration of the fade-in animation
+ * - SLIDE_DISTANCE: 30px - How far content slides up from
+ * - EASING: ease-out - Animation easing function
+ */
+
+.content-wrapper {
+  /* Container doesn't animate itself, just enables child animations */
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Base state: elements with data-delay are hidden initially */
+.content-wrapper [data-delay] {
+  opacity: 0;
+  transform: translateY(30px);
+  /* SLIDE_DISTANCE: 30px - matches rayartchitects.com/blog */
+}
+
+/* When content is visible, trigger staggered animations on children */
+.content-wrapper.animate-in [data-delay] {
+  /* Animation properties */
+  animation: fadeInUp 0.8s ease-out forwards;
+  /* FADE_IN_DURATION: 0.8s - matches rayartchitects.com/blog */
+  /* EASING: ease-out - matches rayartchitects.com/blog */
+}
+
+/* Specific delay values using attribute selectors */
+.content-wrapper.animate-in [data-delay="0s"] {
+  animation-delay: 0s;
+}
+
+.content-wrapper.animate-in [data-delay="0.2s"] {
+  animation-delay: 0.2s;
+}
+
+.content-wrapper.animate-in [data-delay="0.4s"] {
+  animation-delay: 0.4s;
+}
+
+.content-wrapper.animate-in [data-delay="0.6s"] {
+  animation-delay: 0.6s;
+}
+
+.content-wrapper.animate-in [data-delay="0.8s"] {
+  animation-delay: 0.8s;
+}
+
+.content-wrapper.animate-in [data-delay="1s"] {
+  animation-delay: 1s;
+}
+
+.content-wrapper.animate-in [data-delay="1.2s"] {
+  animation-delay: 1.2s;
+}
+
+.content-wrapper.animate-in [data-delay="1.4s"] {
+  animation-delay: 1.4s;
+}
+
+.content-wrapper.animate-in [data-delay="1.6s"] {
+  animation-delay: 1.6s;
+}
+
+.content-wrapper.animate-in [data-delay="1.8s"] {
+  animation-delay: 1.8s;
+}
+
+.content-wrapper.animate-in [data-delay="2s"] {
+  animation-delay: 2s;
+}
+
+/**
+ * fadeInUp Keyframe Animation
+ * 
+ * Creates smooth fade-in with upward slide motion.
+ * Slides up 30px and fades in over 0.8s with ease-out.
+ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+    /* SLIDE_DISTANCE: 30px - matches rayartchitects.com/blog */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
