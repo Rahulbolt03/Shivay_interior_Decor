@@ -1,14 +1,24 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import React from "react";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import { initializeEmailJS, sendQuotationEmails } from "@/services/emailService";
 
 const ContactSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [isSending, setIsSending] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [statusMessage, setStatusMessage] = useState("");
+
+  // Initialize EmailJS with public key
+  React.useEffect(() => {
+    initializeEmailJS();
+  }, []);
 
   const phoneNumber = "981198247";
   const email = "Shivayinteriordelhi@gmail.com";
@@ -101,10 +111,57 @@ const ContactSection = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="bg-card p-8 rounded-lg shadow-xl"
+            className="bg-card p-8 rounded-lg shadow-xl text-black"
           >
             <h3 className="text-2xl font-bold text-foreground mb-6">Quotation Form</h3>
-            <form className="space-y-4">
+            <form
+              className="space-y-4"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const formData = new FormData(form);
+
+                const quotationData = {
+                  name: (formData.get("name") as string) ?? "",
+                  phone: (formData.get("phone") as string) ?? "",
+                  email: (formData.get("email") as string) ?? "",
+                  propertyType: (formData.get("propertyType") as string) ?? "",
+                  message: (formData.get("message") as string) ?? "",
+                };
+
+                setIsSending(true);
+                setStatus("idle");
+                setStatusMessage("");
+
+                try {
+                  // Send emails to both owner and client
+                  const result = await sendQuotationEmails(quotationData);
+
+                  form.reset();
+                  setStatus("success");
+                  setStatusMessage(result.message);
+                } catch (err: any) {
+                  console.error("Email submission error:", err);
+                  setStatus("error");
+
+                  // Build a helpful error message for debugging. Avoid exposing sensitive details in production.
+                  let friendlyMsg = "Something went wrong while sending your inquiry. Please try again or contact us directly.";
+                  try {
+                    if (err?.status) friendlyMsg += ` (status: ${err.status})`;
+                    if (err?.text) friendlyMsg += ` ${err.text}`;
+                    else if (err?.message) friendlyMsg += ` ${err.message}`;
+                    else if (typeof err === "string") friendlyMsg += ` ${err}`;
+                    else friendlyMsg += ` ${JSON.stringify(err)}`;
+                  } catch (e) {
+                    // ignore formatting errors
+                  }
+
+                  setStatusMessage(friendlyMsg);
+                } finally {
+                  setIsSending(false);
+                }
+              }}
+            >
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Name *
@@ -112,8 +169,9 @@ const ContactSection = () => {
                 <Input
                   type="text"
                   placeholder="Your Name"
-                  className="w-full"
+                  className="w-full bg-white text-black placeholder:text-gray-600"
                   required
+                  name="name"
                 />
               </div>
 
@@ -124,8 +182,9 @@ const ContactSection = () => {
                 <Input
                   type="tel"
                   placeholder="Your Phone Number"
-                  className="w-full"
+                  className="w-full bg-white text-black placeholder:text-gray-600"
                   required
+                  name="phone"
                 />
               </div>
 
@@ -136,8 +195,9 @@ const ContactSection = () => {
                 <Input
                   type="email"
                   placeholder="Your Email Address"
-                  className="w-full"
+                  className="w-full bg-white text-black placeholder:text-gray-600"
                   required
+                  name="email"
                 />
               </div>
 
@@ -145,7 +205,11 @@ const ContactSection = () => {
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Property Type *
                 </label>
-                <select className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground" required>
+                <select
+                  className="w-full px-3 py-2 border border-input rounded-md bg-white text-black"
+                  required
+                  name="propertyType"
+                >
                   <option value="">Select Your Property Type</option>
                   <option value="residential">Residential</option>
                   <option value="commercial">Commercial</option>
@@ -159,16 +223,28 @@ const ContactSection = () => {
                 </label>
                 <Textarea
                   placeholder="Tell us about your requirements..."
-                  className="w-full min-h-[120px]"
+                  className="w-full min-h-[120px] bg-white text-black placeholder:text-gray-600"
+                  name="message"
                 />
               </div>
 
               <Button
                 type="submit"
                 className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-6 h-auto"
+                disabled={isSending}
               >
-                Submit Inquiry
+                {isSending ? "Sending..." : "Submit Inquiry"}
               </Button>
+
+              {status !== "idle" && (
+                <p
+                  className={`text-sm ${
+                    status === "success" ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {statusMessage}
+                </p>
+              )}
             </form>
           </motion.div>
         </div>

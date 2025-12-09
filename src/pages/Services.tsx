@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ServicesSection from "@/components/ServicesSection";
+import PromotionalBanner from "@/components/PromotionalBanner";
 import ThreeDDesignsSection from "@/components/ThreeDDesignsSection";
 import WarrantySection from "@/components/WarrantySection";
 import ProcessSection from "@/components/ProcessSection";
@@ -39,6 +40,7 @@ const Services = () => {
         <div className="bg-background">
           <ServicesSection />
           <ResidentialCommercialSection />
+          <PromotionalBanner />
           <ThreeDDesignsSection />
           <ProcessSection />
           <WarrantySection />
